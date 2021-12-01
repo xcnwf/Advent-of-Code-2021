@@ -1,45 +1,43 @@
 // d1.rs
-use std::env;
 use std::fs;
 
-const DAY: &str = "d1";
+const DAY: &'static str = "d1";
 
-/*fn read_file() -> Vec<&'static str> {
+fn read_file() -> String {
     print!("Reading input...");
 
-    let lines = fs::read_to_string("../Inputs/".to_owned()+DAY+".txt").expect("wtf").split("\n").collect();
+    let content: std::io::Result<String> = fs::read_to_string("../Inputs/".to_owned()+DAY+".txt");
 
     println!("Done!");
 
-    lines
-}*/
+    if let Ok(s) = content {
+        s
+    } else {
+        panic!("File Reading Error! Aborting!")
+    }
+}
 
 fn main() {
     println!("Day {}\n", DAY);
 
-    print!("Reading input...");
+    let content = read_file();
 
-    let content = fs::read_to_string("../Inputs/".to_owned()+DAY+".txt").expect("wtf");
-    let lines:Vec<&str> = content.split("\n").collect();
-
-    println!("Done!");
-
-    // Day 1 Challenge : count increases
-    let mut nIncr = 0;
-    let mut prevValue = 0;
+    // Day 1 Challenge : Count the number of times the next int is bigger than the current one
+    let mut n_incr = 0;
+    let mut prev_value = 0;
 
     let mut v1 = 0; let mut v2 = 0; let mut v3 = 0;
-    let mut nGroupIncr = 0;
+    let mut n_group_incr = 0;
 
-    for (i,l) in lines.iter().filter(|&e| !e.is_empty()).enumerate() {
+    for (i,l) in content.lines().enumerate() {
 
         let value = l.parse::<u32>().unwrap();
         
         //part 1
-        if i>0 && value > prevValue {
-            nIncr += 1;
+        if i>0 && value > prev_value {
+            n_incr += 1;
         }
-        prevValue = value;
+        prev_value = value;
 
         //part2
         if i == 0 {
@@ -49,8 +47,9 @@ fn main() {
         } else if i == 2 {
             v3 = value;
         } else {
-            if value+v2+v3 > v1+v2+v3 {
-                nGroupIncr += 1;
+            // Pas besoin de tout sommer
+            if value > v1 {
+                n_group_incr += 1;
             }
             v1 = v2;
             v2 = v3;
@@ -58,6 +57,6 @@ fn main() {
         }
     }
 
-    println!("First challenge: nIncr = {}",nIncr);
-    println!("Second challenge : nIncr = {}", nGroupIncr);
+    println!("First challenge: n_incr = {}",n_incr);
+    println!("Second challenge : n_incr = {}", n_group_incr);
 }
