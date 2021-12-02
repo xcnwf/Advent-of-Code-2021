@@ -9,4 +9,5 @@ My solutions this year were done to learn Rust, so don't treat any code here as 
 Day | Star 1 | Star 2
 ----|:------:|:-----:
 1   | ⭐     | ⭐ 
-2 | TBD | TBD
+2 | ⭐ | ⭐
+3 | TBD | TBD
