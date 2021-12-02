@@ -24,17 +24,20 @@ fn main() {
 
     // Day 2 Challenge : Multiply horizontal distance by depth.
 
-    let mut h_dist: usize = 0;
-    let mut depth: usize = 0;
+    let mut h_dist: isize = 0;
+    let mut depth: isize = 0;
+    let mut depth2: isize = 0;
     for (i, l) in content.lines().enumerate() {
         let res = l.split(" ").collect::<Vec<&str>>();
+        let value = res[1].parse::<isize>().unwrap();
         match res[0] {
-            "forward" => {h_dist += res[1].parse::<usize>().unwrap();},
-            "down" => {depth += res[1].parse::<usize>().unwrap();},
-            "up" => {depth -= res[1].parse::<usize>().unwrap();},
+            "forward" => {h_dist += value; depth2 += value*depth},
+            "down" => {depth += value;},
+            "up" => {depth -= value;},
             _ => {panic!("Bad input");},
         }
     }
 
-    println!("Result is : {}", h_dist*depth);
+    println!("Chall1 result is : {}", h_dist*depth);
+    println!("Chall2 result is : {}", h_dist*depth2);
 }
