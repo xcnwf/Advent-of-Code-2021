@@ -79,12 +79,15 @@ fn main() {
 
     vec = content.lines().collect();
     curr_bit = 0;
+    let mut nvec: Vec<&str>;
     while {
         bit_count=get_most_bits(&vec);
-        vec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='0' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
+        nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='0' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
         curr_bit+=1;
-        println!("{:?} - {}",bit_count,vec.first().unwrap());
-        vec.len() > 1 && curr_bit < 12
+        if nvec.len() == 0 {vec.len() > 1} else {
+        println!("{}: {:?} - {}",vec.len(), bit_count,vec.first().unwrap());
+        vec = nvec;
+        vec.len() > 1 && curr_bit < 12}
     } {}
 
     println!("{:?} - {}",bit_count,vec.first().unwrap());
