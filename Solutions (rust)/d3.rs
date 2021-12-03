@@ -2,44 +2,46 @@ use std::fs;
 
 const DAY: &'static str = "d3";
 
+/**
+ * Return the integer corresponding to its bit representation
+*/
 fn bit_to_int<'a>(arr: &'a str, inv: bool) -> usize {
-    let mut n: usize = 0;
-    for i in 0usize..12usize {
-        let bit = if arr.chars().nth(i).unwrap() == '1' {1} else {0};
-        n = 2*n + if (!inv) {bit} else {1-bit};
-    }
-    n
+	let mut n: usize = 0;
+	for i in 0usize..12usize {
+		let bit = if arr.chars().nth(i).unwrap() == '1' {1} else {0};
+		n = 2*n + if inv {1-bit} else {bit};
+	}
+	n
 }
 
+/**
+ * Find the most used bits in each position from a list of binary numbers 
+*/
 fn get_most_bits<'a>(lines: &Vec<&'a str>) -> [usize; 12] {
-    let mut bit_count: [usize; 12] = [0; 12];
-    let mut n_lines: usize = 0;
+	let mut bit_count: [usize; 12] = [0; 12];
+	let mut n_lines: usize = 0;
 
-    for l in lines.iter() {
-        l.chars().enumerate().for_each(|(i,c)| {bit_count[i] += if c == '1' {1} else {0}});
-        n_lines += 1;
-    }
+	for l in lines.iter() {
+			l.chars().enumerate().for_each(|(i,c)| {bit_count[i] += if c == '1' {1} else {0}});
+			n_lines += 1;
+	}
 
-    for i in 0..12 {
-        let bit = if 2*bit_count[i] >= n_lines {1} else {0};
-        bit_count[i] = bit;
-    }
+	for i in 0..12 {
+			let bit = if 2*bit_count[i] >= n_lines {1} else {0};
+			bit_count[i] = bit;
+	}
 
-    bit_count
+	bit_count
 }
 
 fn read_file() -> String {
-    print!("Reading input...");
+	print!("Reading input...");
 
-    let content: std::io::Result<String> = fs::read_to_string("../Inputs/".to_owned()+DAY+".txt");
+	let content: std::io::Result<String> = fs::read_to_string("../Inputs/".to_owned()+DAY+".txt");
 
-    println!("Done!");
+	println!("Done!");
 
-    if let Ok(s) = content {
-        s
-    } else {
-        panic!("File Reading Error! Aborting!")
-    }
+	content.unwrap()
 }
 
 fn main() {
@@ -67,13 +69,16 @@ fn main() {
     vec = content.lines().collect();
     let mut curr_bit = 0;
     while {
-        bit_count = get_most_bits(&vec);
-        vec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
-        curr_bit+=1;
-        vec.len() != 1
+			bit_count=get_most_bits(&vec);
+			// Keep only the numbers with the right bit at the 'curr_bit'th position.
+			// Here the right bit is the most used one.
+			nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
+			
+			curr_bit+=1;
+			vec = nvec;
+			
+			vec.len() > 1 && curr_bit < 12
     } {}
-
-    println!("{:?} - {}",bit_count,vec.first().unwrap());
 
     n1 = bit_to_int(*(vec.first().unwrap()), false);
 
@@ -81,20 +86,23 @@ fn main() {
     curr_bit = 0;
     let mut nvec: Vec<&str>;
     while {
-        bit_count=get_most_bits(&vec);
-        nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) != bit_count[curr_bit]).cloned().collect();
-        curr_bit+=1;
-        println!("{} ({}): {:?} - {}",nvec.len(), curr_bit, bit_count,vec.first().unwrap());
-        if nvec.len() == 0 {vec.len() > 1} else {
-        vec = nvec;
-        vec.len() > 1 && curr_bit < 12}
+			bit_count=get_most_bits(&vec);
+			// The right bit here is the least used one.
+			nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) != bit_count[curr_bit]).cloned().collect();
+			
+			curr_bit+=1;
+			
+			// If all numbers have the same bit in that place, skip
+			// This is useful because the select the bit is the LEAST used, which may not be a possibility.
+			if nvec.len() == 0 {
+				true
+			} else {
+				vec = nvec;
+				vec.len() > 1 && curr_bit < 12
+			}
     } {}
-
-    println!("{:?} - {}",bit_count,vec.first().unwrap());
 
     n2 = bit_to_int(*(vec.first().unwrap()), false);
 
     println!("Second challenge: result = {}",n1*n2);
-    
-    println!("{}",*(vec.first().unwrap()))//bit_to_int("010101101101",false))
 }
