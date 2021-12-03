@@ -72,10 +72,9 @@ fn main() {
 			bit_count=get_most_bits(&vec);
 			// Keep only the numbers with the right bit at the 'curr_bit'th position.
 			// Here the right bit is the most used one.
-			nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
+			vec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
 			
 			curr_bit+=1;
-			vec = nvec;
 			
 			vec.len() > 1 && curr_bit < 12
     } {}
