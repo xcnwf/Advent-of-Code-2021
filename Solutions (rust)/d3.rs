@@ -6,7 +6,7 @@ fn bit_to_int<'a>(arr: &'a str, inv: bool) -> usize {
     let mut n: usize = 0;
     for i in 0usize..12usize {
         let bit = if arr.chars().nth(i).unwrap() == '1' {1} else {0};
-        n = 2*n + if inv {bit} else {1-bit};
+        n = 2*n + if (!inv) {bit} else {1-bit};
     }
     n
 }
@@ -21,7 +21,7 @@ fn get_most_bits<'a>(lines: &Vec<&'a str>) -> [usize; 12] {
     }
 
     for i in 0..12 {
-        let bit = if bit_count[i] >= n_lines/2 {1} else {0};
+        let bit = if 2*bit_count[i] >= n_lines {1} else {0};
         bit_count[i] = bit;
     }
 
@@ -82,10 +82,10 @@ fn main() {
     let mut nvec: Vec<&str>;
     while {
         bit_count=get_most_bits(&vec);
-        nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='0' {1} else {0}) == bit_count[curr_bit]).cloned().collect();
+        nvec = vec.iter().filter(|&e| (if e.chars().nth(curr_bit).unwrap()=='1' {1} else {0}) != bit_count[curr_bit]).cloned().collect();
         curr_bit+=1;
+        println!("{} ({}): {:?} - {}",nvec.len(), curr_bit, bit_count,vec.first().unwrap());
         if nvec.len() == 0 {vec.len() > 1} else {
-        println!("{}: {:?} - {}",vec.len(), bit_count,vec.first().unwrap());
         vec = nvec;
         vec.len() > 1 && curr_bit < 12}
     } {}
@@ -95,4 +95,6 @@ fn main() {
     n2 = bit_to_int(*(vec.first().unwrap()), false);
 
     println!("Second challenge: result = {}",n1*n2);
+    
+    println!("{}",*(vec.first().unwrap()))//bit_to_int("010101101101",false))
 }
