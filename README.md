@@ -11,4 +11,5 @@ Day | Star 1 | Star 2
 1   | ⭐     | ⭐ 
 2 | ⭐ | ⭐
 3 | ⭐ | ⭐
-4 | TBD | TBD
+4 | ⭐ | ⭐
+5 | TBD | TBD
