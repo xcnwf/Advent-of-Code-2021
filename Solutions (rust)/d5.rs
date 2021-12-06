@@ -116,5 +116,5 @@ fn main() {
 
 	//count overlaping parts
 	let n_overlaps = overlaps.values().filter(|&c| (*c)>1).count();
-	println!("Second challenge - Result: {}", n_overlaps); //18445 < R < 18878
+	println!("Second challenge - Result: {}", n_overlaps);
 }
