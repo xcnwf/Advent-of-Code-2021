@@ -31,9 +31,9 @@ fn main() {
     }
     //Done!
 
-    let mut new_fishes = 0;
+    let mut new_fishes: u64 = 0;
 
-    for i in 0..80 {
+    for _ in 0..80 {
         for fish in fishes.iter_mut() {
             //update fishes and make them to be created
             if *fish == 0 {
@@ -56,7 +56,7 @@ fn main() {
 
     
     
-    //part2 - We won't add fish to the board, but rather calculate new values on a 7-day period
+    //part2 - We won't add fish to the board, but rather calculate new values on a 7-day period (full fish rotation)
 
     let mut fishes: [u64; 9] = [0;9];
     //Parsing input
@@ -66,8 +66,8 @@ fn main() {
     //Done!
 
     //256 days = 36 weeks and 4 days
+    let mut fishes_copy: [u64; 9] = [0;9];
     for _ in 0..36 {
-        let mut fishes_copy: [u64; 9] = [0;9];
         fishes_copy.copy_from_slice(&fishes);
 
         //In a week, 0-6 fishes don't move and have new fishes
