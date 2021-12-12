@@ -76,6 +76,54 @@ fn main() {
 
     println!("First challenge - result: {}",total_paths);
 
+
+
+    //lets do part 2 separately
+    //here, we store if we can visit one small cave twice
+    let mut visits: Vec<(bool,Vec<&str>)> = Vec::new();
+    let start = vec!("start");
+    visits.push((true, start));
+
+    let mut total_paths: usize = 0;
+
+    while visits.len() > 0 {
+        let (can_visit_twice, curr_visit): (bool, Vec<&str>) = visits.pop().unwrap();
+        for &cave in links[curr_visit.last().unwrap()].iter() {
+            
+            let mut n_can_visit_twice: bool = can_visit_twice;
+
+            // if we reached the end, count the path
+            if cave == "end" {
+                total_paths += 1;
+                continue;
+            }
+
+            // we don't want to go twice to the start
+            if cave == "start" {
+                continue;
+            }
+
+            // skip the small caves already visited
+            // if we already visited one twice
+            if is_lowercase(cave) {
+                if curr_visit.contains(&cave) {
+                    if can_visit_twice {
+                        n_can_visit_twice = false;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            //add the new route to visit.
+            let mut new_visit = curr_visit.clone();
+            new_visit.push(cave);
+            visits.push((n_can_visit_twice, new_visit));
+        }
+    }
+
+    println!("Second challenge - result: {}",total_paths);
+
 }
 
 fn is_lowercase<'a>(s: &'a str) -> bool {
