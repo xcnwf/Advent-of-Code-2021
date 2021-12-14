@@ -43,8 +43,16 @@ fn main() {
     for _ in 0..10 {
         round(&mut polymer, &rules);
         println!("{:?}", polymer);
-        break;
+        println!("{:?}", frequency(&polymer));
+        
     }
+    
+    // We use reduce to make start from the first value ine the iter
+    let freqs = frequency(&polymer);
+    let max = freqs.values().reduce(|prev, curr| if curr > prev {curr} else {prev}).unwrap();
+    let min = freqs.values().reduce(|prev, curr| if curr < prev {curr} else {prev}).unwrap();
+    
+    println!("First challenge - result: {}", max-min);
 }
 
 fn round (polymer: &mut Vec<char>, rules: &HashMap<(char, char), char>) {
@@ -65,7 +73,18 @@ fn round (polymer: &mut Vec<char>, rules: &HashMap<(char, char), char>) {
 
 }
 
-fn frequency(polymer: &Vec) -> HashMap<char, int> {
+// get the frequency of apparition of chars in a vec
+fn frequency<T>(polymer: &Vec<T>) -> HashMap<T, u32>  
+where T: std::hash::Hash,
+      T: Ord, 
+      T: Copy,  {
     let mut freq = HashMap::new();
-    for c in polymer
+    for &c in polymer {
+        if !freq.contains_key(&c) {
+            freq.insert(c, 1);
+        } else {
+            *freq.get_mut(&c).unwrap() += 1;
+        }
+    }
+    freq
 }
