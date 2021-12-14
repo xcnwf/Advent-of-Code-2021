@@ -2,7 +2,7 @@
 use std::fs;
 use std::collections::HashMap;
 
-const DAY: &'static str = "d14_example";
+const DAY: &'static str = "d14";
 
 fn read_file() -> String {
 	print!("Reading input...");
@@ -42,9 +42,6 @@ fn main() {
 
     for _ in 0..10 {
         round(&mut polymer, &rules);
-        println!("{:?}", polymer);
-        println!("{:?}", frequency(&polymer));
-        
     }
     
     // We use reduce to make start from the first value ine the iter
@@ -53,6 +50,55 @@ fn main() {
     let min = freqs.values().reduce(|prev, curr| if curr < prev {curr} else {prev}).unwrap();
     
     println!("First challenge - result: {}", max-min);
+
+    // part2 - let's be smarter (first part was done that way to code differently and have more experience)
+    // let's store the number of letters as well as the number of pairs at each step
+    let mut letters: HashMap<char, u64> = HashMap::new();
+    let mut pairs: HashMap<(char, char), u64> = HashMap::new();
+
+    for (&p, &c) in rules.iter() {
+        letters.insert(c, 0u64);
+        pairs.insert(p, 0u64);
+    }
+
+    // restart polymer
+    polymer = content.lines().next().unwrap().chars().collect();
+    for i in 0..(polymer.len()-1) {
+        *pairs.get_mut(&(polymer[i], polymer[i+1])).unwrap() += 1;
+        *letters.get_mut(&polymer[i]).unwrap() += 1;
+    } 
+    
+    //add the last letter
+    *letters.get_mut(&polymer.last().unwrap()).unwrap() += 1;
+
+    for _ in 0..40 {
+        let mut new_pairs: HashMap<(char, char), u64> = pairs.clone();
+        for (&p, &c) in rules.iter() {
+            let (c1, c2) = p;
+            let n = pairs[&p];
+
+            // we add n new letters
+            *letters.get_mut(&c).unwrap() += n;
+
+            // and constitute new pairs
+            *new_pairs.get_mut(&(c1, c)).unwrap() += n;
+            *new_pairs.get_mut(&(c, c2)).unwrap() += n;
+
+            // and brek the old ones
+            *new_pairs.get_mut(&p).unwrap() -= n;
+        }
+        pairs = new_pairs;
+
+        /*println!("{:?}", letters);
+        println!("{:?}", pairs);
+        break;*/
+    }
+
+    //let's do the calculation
+    let max = letters.values().reduce(|prev, curr| if curr > prev {curr} else {prev}).unwrap();
+    let min = letters.values().reduce(|prev, curr| if curr < prev {curr} else {prev}).unwrap();
+
+    println!("Second challenge - result: {}", max-min);
 }
 
 fn round (polymer: &mut Vec<char>, rules: &HashMap<(char, char), char>) {
