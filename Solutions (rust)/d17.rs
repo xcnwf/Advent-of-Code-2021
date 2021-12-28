@@ -55,20 +55,19 @@ fn main() {
     let mut velocities = std::collections::HashSet::new();
 
     let x_max = i32::max(x.0,x.1);
-    let mut m = std::collections::HashMap::new();
+    let mut artithmetic_progressions = std::collections::HashMap::new();
     let mut i = 1;
     let mut n = 1;
     while n <= x_max {
-        m.insert(n,i);
+        artithmetic_progressions.insert(n,i);
         i += 1;
         n += i;
     }
 
-    n = i*(i-1)/2;
-
+    println!("{}..{} - {}..{}",x.0,x.1,y.0,y.1);
     for i in (x.0)..=(x.1) {
         for j in (y.0)..=(y.1) {
-            initial_velocities(i, j, m.contains_key(&i), &mut velocities);
+            initial_velocities(i, j, artithmetic_progressions.contains_key(&i), &mut velocities);
         }
     }
 
@@ -76,23 +75,27 @@ fn main() {
     println!("Second challenge - result: {}", velocities.len());
 }
 
-// max steps a case could be reached in
-fn max_steps(x:i32, y:i32) -> i32 {
-    i32::max(x, i32::abs(y))
-}
-
 fn initial_velocities(x: i32, y: i32, is_arithmetic: bool, vels: &mut std::collections::HashSet<(i32,i32)>) {
     vels.insert((x,y)); //at least direct with step = 1
     
     let mut step = 2;
     print!("\n{} {}: ",x,y);
-    while x >= step * (step - 1) {
+
+
+    /* Because for n steps, x must be of the form 
+            x = n*k + arithmetic_sum(n-1), with k natural
+            (eg. 15 = 2*7 + 1 so it could be reached in 2 steps with initial velocity 8 (=k+2-1))
+            (    15 = 3*4 + 3 so it could be reached in 3 steps with ---------------- 6 (=k+3-1))
+            (    15 = 6*0 + 15 so it could be reached in 6 steps with initial velocity 5 (=k+6-1))
+       So while x - arithmetic_sum(n-1) >= 0, there could exist a k
+    */
+    while x >= arithmetic_sum(step-1) /*step * (step - 1)*/ {
         //if we can reach this x in 'step' steps.
         if (x-arithmetic_sum(step-1))%step == 0 {
-            let vx_0 = (x-arithmetic_sum(step-1))/step + step - 1; //x diminishes so wee need to compensate
+            let vx_0 = (x-arithmetic_sum(step-1))/step + step - 1; //x diminishes so we need to compensate
             //same for y but the relation is reversed.
             if (y+arithmetic_sum(step-1))%step == 0 {
-                let vy_0 = (y+arithmetic_sum(step-1))/step; // y doesn't so we don't touch it
+                let vy_0 = (y+arithmetic_sum(step-1))/step; // y increases so we don't touch it
                 vels.insert((vx_0,vy_0));
                 print_debug(vx_0, vy_0, step);
             }
@@ -100,48 +103,26 @@ fn initial_velocities(x: i32, y: i32, is_arithmetic: bool, vels: &mut std::colle
         step += 1;
     }
 
-    let min_step_x = step;
+    //(step-1) - 1 to account for the =
+    let min_step_x = step-2;
 
     step = 1;
-    while -y > step * (step - 1) {
-        // if y can be reached.
-        if (y+arithmetic_sum(step-1))%step == 0 {
-            let vy_0 = -(y+arithmetic_sum(step-1))/step - 1;
-            
-            // if it takes no less than the number of steps needed for x to stabilize
-            if 2*vy_0 + step + 1 >= min_step_x {
-                vels.insert((min_step_x,vy_0));
-                print_debug(min_step_x, vy_0, 2*vy_0+step+1);
-            }
-        }
-        step += 1;
-    }
-}
-
-fn up_shoot(x:i32, y_min:i32, y_max:i32, steps:i32) -> u32{
-    //if it is an arithmetic progression, then we can reach this case by firing up
-    // and higher than the time it takes to have vx = 0
-    print!("ALERT: {} ", steps);
-    
-    // We need to consider only the different vy
-    let mut vys = std::collections::HashSet::new();
-    for y in y_max..=y_min {
-        let mut step = 1;
-        while -y > step * (step - 1) {
+    if (is_arithmetic) {
+        //for x in arithmetic progression, we want to also consider the cases where x stabilizes
+        while -y >= arithmetic_sum(step - 1) {
             // if y can be reached.
             if (y+arithmetic_sum(step-1))%step == 0 {
                 let vy_0 = -(y+arithmetic_sum(step-1))/step - 1;
                 
                 // if it takes no less than the number of steps needed for x to stabilize
-                if 2*vy_0 + step + 1 >= steps {
-                    vys.insert(vy_0);
-                    print_debug(steps, vy_0, 2*vy_0+step+1);
+                if 2*vy_0 + step + 1 > min_step_x {
+                    vels.insert((min_step_x,vy_0));
+                    print_debug(min_step_x, vy_0, 2*vy_0+step+1);
                 }
             }
-        step += 1;
+            step += 1;
         }
     }
-    return vys.len() as u32;
 }
 
 fn print_debug(vx:i32,vy:i32,step:i32) {
@@ -150,4 +131,25 @@ fn print_debug(vx:i32,vy:i32,step:i32) {
 
 fn arithmetic_sum(n: i32) -> i32 {
     n*(n+1)/2
+}
+
+fn is_valid(x: (i32,i32), y: (i32,i32), mut vx: i32, mut vy: i32) -> bool {
+    let (mut x_pos, mut y_pos) = (0,0);
+    let init_vx = vx;
+    let init_vy = vy;
+
+    while y_pos >= y.0 {
+        if x_pos >= x.0 && x_pos <= x.1 && y_pos >= y.0 && y_pos <= y.1 {
+            return true
+        } 
+        x_pos += vx;
+        y_pos += vy;
+
+        if vx > 0 {
+            vx -= 1;
+        }
+        vy -= 1;
+    }
+    print!("({};{}) ",init_vx,init_vy);
+    return false;
 }
