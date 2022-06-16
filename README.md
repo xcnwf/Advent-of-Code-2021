@@ -10,7 +10,7 @@ My solutions this year were done to learn the *Rust* and *Haskell* programming l
 ------|:------:|:-----: |-|:----:|:-------:|
 1   | ⭐     | ⭐  | | ✅ | ✅ |
 2 | ⭐ | ⭐ | | ✅ | ✅ |
-3 | ⭐ | ⭐ | | ✅ | ❌ |
+3 | ⭐ | ⭐ | | ✅ | ✅ |
 4 | ⭐ | ⭐ | | ✅ | ❌ |
 5 | ⭐ | ⭐ | | ✅ | ❌ |
 6 | ⭐ | ⭐ | | ✅ | ❌ |
