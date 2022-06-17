@@ -1,3 +1,7 @@
 *.exe
 *.pdb
 .vscode
+Solutions_Haskell/*
+!Solutions_Haskell/*.hs
+Solutions\ (rust)/*
+!Solutions\ (rust)/*.rs

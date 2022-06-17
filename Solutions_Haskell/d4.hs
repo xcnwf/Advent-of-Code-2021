@@ -10,8 +10,8 @@ main = do
     print (head (bingo_mark 83 boards))
     print (map bingo_sum ((bingo_mark 83 boards))) -}
     
-    print ((part1 content))
-    {- sprint (part2 content) -}
+    putStrLn ("Part1 : "++(show (part1 content)))
+    putStrLn ("Part2 : "++(show (part1 content)))
 
 type Board = [[(Int, Bool)]]
 
@@ -65,13 +65,15 @@ part1 content =
             ) (boards, Nothing) nbs
     in maybe 0 id m
 
-{- part2 :: [[Int]] -> Int
+part2 :: [String] -> Int
 part2 content = 
-    let f l acc comp = case l of 
-                [] -> [1]
-                x:[] -> (reverse acc)++x
-                _ -> let c = head (comp l)
-                     in f (map tail ((filter (\el -> head el == c)) l)) (c:acc) comp
+    let (nbs, boards) = parse_bingo_input content
+        f num boards = let next_boards = (bingo_mark num boards)
+                           filter_boards = lefts (map (bingo_check) next_boards)
+            in (filter_boards, if null filter_boards then Just (num * bingo_sum (head next_boards)) else Nothing)
     in 
-    let (arr1, arr2) = (f content [] most_present_bits, f content [] least_present_bits) in
-        (bits_to_int arr1) * (bits_to_int arr2) -}
+    let (brd, m) = foldl (\ (brd, m) num -> case m of
+            Just _ -> ([],m)
+            Nothing -> f num brd
+            ) (boards, Nothing) nbs
+    in maybe 0 id m
