@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 import Reader
 import Data.Char(digitToInt)
 
@@ -20,17 +22,17 @@ bits_to_int :: [Int] -> Int
 bits_to_int = foldl (\val x -> 2*val + x) 0
 
 part1 :: [[Int]] -> Int
-part1 content = 
+part1 content =
     let arr = most_present_bits content in
-        (bits_to_int arr) * (bits_to_int (map (1-) arr))
+        bits_to_int arr * bits_to_int (map (1-) arr)
 
 part2 :: [[Int]] -> Int
-part2 content = 
-    let f l acc comp = case l of 
+part2 content =
+    let f l acc comp = case l of
                 [] -> [1]
-                x:[] -> (reverse acc)++x
+                [x] -> reverse acc++x
                 _ -> let c = head (comp l)
-                     in f (map tail ((filter (\el -> head el == c)) l)) (c:acc) comp
-    in 
+                     in f (map tail (filter (\el -> head el == c) l)) (c:acc) comp
+    in
     let (arr1, arr2) = (f content [] most_present_bits, f content [] least_present_bits) in
-        (bits_to_int arr1) * (bits_to_int arr2)
+        bits_to_int arr1 * bits_to_int arr2

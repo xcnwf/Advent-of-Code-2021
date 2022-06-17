@@ -1,8 +1,6 @@
 import Reader
-import Data.Typeable(typeOf)
 import Data.Either
 import Data.Maybe
-import Debug.Trace
 
 main = do 
     content <- read_file "d4" (id)
